@@ -1089,9 +1089,18 @@ if __name__ == "__main__":
     # Ты можешь узнать свой Telegram ID, отправив сообщение боту @userinfobot (в Telegram).
     your_telegram_id = 5620803063 # <--- ИЗМЕНИ ЗДЕСЬ НА СВОЙ ID
 
+    # --- ДОБАВЬ ЭТУ СТРОКУ ЗДЕСЬ ---
+    init_db() 
+    # -------------------------------
+
     make_admin(your_telegram_id)
     
     application = Application.builder().token(TOKEN).build()
+    
+    # ... здесь должны быть добавлены твои хэндлеры (application.add_handler)...
+
+    # Запускаем бота
+    application.run_polling() # или application.run_webhook() - зависит от того, как ты запускаешь
 
     # --- ОБРАБОТЧИКИ КОМАНД ---
     application.add_handler(CommandHandler("start", start))
