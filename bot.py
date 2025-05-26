@@ -1084,18 +1084,66 @@ def make_admin(telegram_id_to_make_admin: int):
 
     conn.close()
 
+# В самом начале файла, где у тебя TOKEN, DB_NAME, your_telegram_id
+# Добавь эти переменные:
+PORT = 8000 # Порт, на котором будет слушать твой бот на Render. Может быть 443 или 80. Render обычно по умолчанию предоставляет 10000.
+# ВАЖНО: Render может требовать использовать порт из переменной окружения.
+# Давай попробуем 8000 сначала, если не получится, я скажу, как изменить.
+# Если у тебя есть переменная окружения PORT в Render, то используй ее:
+# import os
+# PORT = int(os.environ.get('PORT', '8000')) # Замени 8000 на то, что Render дает. 10000 часто используется.
+
+# ... остальной код бота ...
+
 if __name__ == "__main__":
-    # !!! ЗАМЕНИ ЭТОТ ID НА СВОЙ РЕАЛЬНЫЙ TELEGRAM ID !!!
-    # Ты можешь узнать свой Telegram ID, отправив сообщение боту @userinfobot (в Telegram).
-    your_telegram_id = 5620803063 # <--- ИЗМЕНИ ЗДЕСЬ НА СВОЙ ID
+    init_db()
 
-    # --- ДОБАВЬ ЭТУ СТРОКУ ЗДЕСЬ ---
-    init_db() 
-    # -------------------------------
+    # --- Важный момент: получение токена бота ---
+    # Убедись, что TOKEN переменная определена и содержит токен бота
+    # Если токен хранится в файле .env, убедись, что этот файл загружен на Render
+    # Или просто захардкодь его здесь для теста, если это не секрет
+    # TOKEN = "ТВОЙ_ТОКЕН_БОТА" # Например, так
 
-    make_admin(your_telegram_id)
-    
     application = Application.builder().token(TOKEN).build()
+
+    # Обработчики команд и сообщений (оставь их как есть)
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("register", register))
+    application.add_handler(CommandHandler("profile", profile))
+    application.add_handler(CommandHandler("leaderboard", leaderboard))
+    application.add_handler(CommandHandler("find_match", find_match))
+
+    # Админские команды
+    application.add_handler(CommandHandler("admin_panel", admin_panel))
+    application.add_handler(CommandHandler("set_admin", set_admin_cmd))
+    application.add_handler(CommandHandler("ban_user", ban_user_cmd))
+    application.add_handler(CommandHandler("unban_user", unban_user_cmd))
+    application.add_handler(CommandHandler("mute_user", mute_user_cmd))
+    application.add_handler(CommandHandler("unmute_user", unmute_user_cmd))
+    application.add_handler(CommandHandler("remove_admin", remove_admin_cmd))
+    application.add_handler(CommandHandler("change_rating", change_rating_cmd))
+    application.add_handler(CommandHandler("delete_user", delete_user_cmd))
+
+    # Обработчик сообщений, которые не являются командами
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    # Если handle_message закомментировано, раскомментируй его, чтобы бот отвечал на текст
+
+    # --- Новый блок для Webhook ---
+    # Получаем URL твоего сервиса Render (он будет у Render после создания сервиса)
+    # Например, если ты назвал сервис "my-amazing-bot", то URL будет https://my-amazing-bot.onrender.com/
+    # Сюда нужно будет вставить этот URL. Пока поставь заглушку.
+    WEBHOOK_URL = "https://ТВОЁ_ИМЯ_СЕРВИСА_НА_RENDER.onrender.com/" # Эту строку нужно будет ОБЯЗАТЕЛЬНО ОБНОВИТЬ ПОЗЖЕ!
+
+    # Запускаем бота в режиме Webhook
+    # listen: Порт, на котором будет слушать твой бот внутри контейнера Render.
+    # url_path: Путь, по которому Telegram будет отправлять обновления (может быть произвольным, например, '/webhook')
+    # webhook_url: Полный URL, который Telegram будет использовать.
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=PORT, # Используй PORT, который ты определил выше
+        url_path="/", # Можно оставить '/', Telegram будет отправлять на корень URL
+        webhook_url=WEBHOOK_URL # Полный URL твоего сервиса на Render
+    )
     
     # ... здесь должны быть добавлены твои хэндлеры (application.add_handler)...
 
