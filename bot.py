@@ -13,7 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # --- Конфигурация Токена Бота (ЗАМЕНИ НА СВОЙ ТОКЕН!) ---
-TOKEN = "7777081792:AAGBUhVUfuCRn3OFZAPzrH0CCadnbnyT9Mk" 
+TOKEN = "7777081792:AAGwkaCvh6_1aKp9KtaMAud4rp7p6PNU1T8" 
 
 # --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ДЛЯ РАЗНЫХ ФАЗ ПОИСКА/СОЗДАНИЯ МАТЧА ---
 GLOBAL_MATCH_FLOW = {} # Словарь для хранения информации о каждом матче на разных этапах {chat_id: {match_id: ..., 'players': [], 'current_phase': 'search'|'map_vote'|'captain_pick'|'finished', 'message_id': ..., 'map_votes': {...}, 'captains': [...], 'teams': {...}, 'remaining_players_for_pick': [...], 'current_picker_index': ..., 'search_timeout_task': None}}
